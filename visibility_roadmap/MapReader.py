@@ -46,12 +46,13 @@ class RectangleObstacle:
         ret = fcl.continuousCollide(self.o1, self.t1, o2, t2, request, result)
         return ret == 0.0
 
+
 class Obstacles:
     def __init__(self, name, robot_radius = 1.0):
         with open(name) as file:
             self.env = json.load(file)
         self.rect_obstacles = []
-
+        self.name = name
         for key, data in self.env.items():
             # print(key, data)
             position = data['position']
@@ -62,7 +63,8 @@ class Obstacles:
             xy = (position[0] - width / 2, position[1] - height / 2)
             self.rect_obstacles.append(RectangleObstacle(xy, width, height, robot_radius))
 
-    def check_collision(self, x, y):
+    def check_collision(self, pos):
+        x, y = pos[0], pos[1]
         collisions = [r.collision_check(x, y)for r in self.rect_obstacles]
         return any(collisions)
     def plot(self):
@@ -74,3 +76,5 @@ class Obstacles:
         return [item .coords(addOffset=False) for item in self.rect_obstacles]
 
 
+    def copy(self):
+        return Obstacles(self.name)

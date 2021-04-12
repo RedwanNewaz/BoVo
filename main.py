@@ -15,8 +15,8 @@ def gen_trajectories(robots):
                 yield {r.id:r.get_position()}
     print('[+] terminated')
 if __name__ == '__main__':
-    # robot1_start = np.array([-2.6, -10.6, 0, 0])
-    robot1_start = np.array([7.6, -5.6, 0, 0])
+    robot1_start = np.array([-2.6, -10.6, 0, 0])
+    # robot1_start = np.array([7.6, -5.6, 0, 0])
     # robot1_start = np.array([-35.0, -7.0, 0, 0])
     robot2_start = np.array([-17, 5, 0, 0])
     robot3_start = np.array([-4, 6, 0, 0])
@@ -33,9 +33,9 @@ if __name__ == '__main__':
     res = gen_trajectories(robots)
     # vrep_trajectories(traj=res)
     fig, ax = plt.subplots(figsize=(16,10))
-    plt.plot(r1.path[:, 0], r1.path[:, 1], 'b' )
-    plt.plot(r2.path[:, 0], r2.path[:, 1], 'r')
-    plt.plot(r3.path[:, 0], r3.path[:, 1], 'g')
+    plt.scatter(r1.path[:, 0], r1.path[:, 1], color='b' )
+    plt.scatter(r2.path[:, 0], r2.path[:, 1], color='r')
+    plt.scatter(r3.path[:, 0], r3.path[:, 1], color='g')
 
     history = defaultdict(list)
 

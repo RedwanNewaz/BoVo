@@ -8,8 +8,6 @@ filedir = os.path.dirname(__file__)
 
 class RobotModel:
     def __init__(self, robot_start, robot_goal, id):
-        # self.state = robot_start
-        # self.goal = robot_goal
         self.id = id
         self.road_map = VisibilityPlanner(os.path.join(filedir,'..', 'visibility_roadmap/map2.json'))
         path = self.road_map(robot_start[:2], robot_goal[:2])

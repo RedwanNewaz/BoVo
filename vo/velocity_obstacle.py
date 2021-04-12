@@ -6,13 +6,8 @@ author: Ashwin Bose (atb033@github.com)
 
 
 import numpy as np
-
-# SIM_TIME = 5.
 TIMESTEP = 0.1
-# NUMBER_OF_TIMESTEPS = int(SIM_TIME/TIMESTEP)
-# ROBOT_RADIUS = 0.5
-# VMAX = 2
-VMIN = 0.2
+
 
 def compute_desired_velocity(current_pos, goal_pos, robot_radius, vmax):
     disp_vec = (goal_pos - current_pos)[:2]
@@ -26,14 +21,12 @@ def compute_desired_velocity(current_pos, goal_pos, robot_radius, vmax):
 
 
 def collision_checking(pA, vA, v_sample, workspace):
-    valid_velocities = []
-    for i, (vx, vy) in enumerate(v_sample.T):
-        v = np.array((vx, vy))
-        x = np.hstack((pA, vA))
-        x_new = update_state(x, v)
-        if not workspace.check_collision(x_new[0], x_new[1]):
-            valid_velocities.append((vx, vy))
+    x = np.hstack((pA, vA))
+    valid_velocities = [v for v in v_sample.T if not workspace.check_collision(update_state(x, v)) ]
     return np.array(valid_velocities).T
+
+
+
 def compute_velocity(robot, obstacles, v_desired, ROBOT_RADIUS, VMAX, workspace):
     pA = robot[:2]
     vA = robot[2:]
