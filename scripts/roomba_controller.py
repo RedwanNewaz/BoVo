@@ -34,6 +34,9 @@ class TrajController:
         eulers = euler_from_quaternion([pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w])
         self._curr_state[2] = eulers[-1]
 
+        # print(curr_state)
+        marker = self.current_state_pub(self._curr_state)
+        self._path_pub.publish(marker)
 
     def goal_update(self, msg: PoseStamped):
         """
@@ -159,9 +162,6 @@ class TrajController:
         theta = curr_state[2]
         curr_state[0] += v * np.cos(theta) * self.dt
         curr_state[1] += v * np.sin(theta) * self.dt
-        # print(curr_state)
-        marker = self.current_state_pub(curr_state)
-        self._path_pub.publish(marker)
 
         # odometry publish
         odom = Odometry()
