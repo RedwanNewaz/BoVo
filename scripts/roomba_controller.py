@@ -2,7 +2,8 @@
 import ros
 import numpy as np
 import rospy
-from geometry_msgs.msg import PoseStamped, Twist
+from geometry_msgs.msg import PoseStamped, TwistWithCovarianceStamped
+from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from visualization_msgs.msg import Marker
 
@@ -20,8 +21,19 @@ class TrajController:
         self.Kp_alpha = Kp_alpha
         self.Kp_beta = Kp_beta
         name = rospy.get_param('/%s/name' % rospy.get_name(), "roomba20")
-        self._pub = rospy.Publisher('/%s/path' % name, Marker, queue_size=10)
-        self._cmd_pub = rospy.Publisher('/%s/cmd_vel' % name, Twist, queue_size=10)
+        self._path_pub = rospy.Publisher('/%s/path' % name, Marker, queue_size=10)
+        self._cmd_pub = rospy.Publisher('/%s/cmd_vel' % name, TwistWithCovarianceStamped, queue_size=10)
+        self._odom_pub = rospy.Publisher('/%s/odom' % name, Odometry, queue_size=10)
+
+        self._state_sub = rospy.Subscriber('/%s/%s/filtered/odometry' % (name, name), Odometry, self.state_callback)
+
+    def state_callback(self, msg:Odometry):
+        pose = msg.pose.pose
+        self._curr_state[0] = pose.position.x
+        self._curr_state[1] = pose.position.y
+        eulers = euler_from_quaternion([pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w])
+        self._curr_state[2] = eulers[-1]
+
 
     def goal_update(self, msg: PoseStamped):
         """
@@ -130,19 +142,41 @@ class TrajController:
         if rho <= 0.1:
             v, w = 0, 0
 
-        msg = Twist()
-        msg.linear.x = v
-        msg.angular.z = w
+        msg = TwistWithCovarianceStamped()
+        msg.header.stamp = rospy.Time.now()
+        msg.header.frame_id = 'map'
+
+        msg.twist.twist.linear.x = v
+        msg.twist.twist.angular.z = w
+        # msg.linear.x = v
+        # msg.angular.z = w
         self._cmd_pub.publish(msg)
 
+        curr_state = self._curr_state.copy()
+
         # TODO replace this with ekf localiazation
-        self._curr_state[2] += w * self.dt
-        theta = self._curr_state[2]
-        self._curr_state[0] += v * np.cos(theta) * self.dt
-        self._curr_state[1] += v * np.sin(theta) * self.dt
-        # print(self._curr_state)
-        marker = self.current_state_pub(self._curr_state)
-        self._pub.publish(marker)
+        curr_state[2] += w * self.dt
+        theta = curr_state[2]
+        curr_state[0] += v * np.cos(theta) * self.dt
+        curr_state[1] += v * np.sin(theta) * self.dt
+        # print(curr_state)
+        marker = self.current_state_pub(curr_state)
+        self._path_pub.publish(marker)
+
+        # odometry publish
+        odom = Odometry()
+        odom.header.frame_id = 'map'
+        odom.child_frame_id = 'odom'
+        odom.header.stamp = rospy.Time.now()
+        odom.pose.pose.position.x = curr_state[0]
+        odom.pose.pose.position.y = curr_state[1]
+
+        q = quaternion_from_euler(0, 0, curr_state[2])
+        odom.pose.pose.orientation.x = q[0]
+        odom.pose.pose.orientation.y = q[1]
+        odom.pose.pose.orientation.z = q[2]
+        odom.pose.pose.orientation.w = q[3]
+        self._odom_pub.publish(odom)
 
 if __name__ == "__main__":
     rospy.init_node("TrajController", anonymous=True)
