@@ -179,10 +179,11 @@ def in_between(theta_right, theta_dif, theta_left):
 
 def compute_V_des(X, goal, V_max):
     V_des = []
+    N = 2
     for i in range(len(X)):
-        dif_x = [goal[i][k]-X[i][k] for k in range(2)]
+        dif_x = [goal[i][k]-X[i][k] for k in range(N)]
         norm = distance(dif_x, [0, 0])
-        norm_dif_x = [dif_x[k]*V_max[k]/norm for k in range(2)]
+        norm_dif_x = [dif_x[k]*V_max[k]/norm for k in range(N)]
         V_des.append(norm_dif_x[:])
         if reach(X[i], goal[i], 0.1):
             V_des[i][0] = 0

@@ -165,6 +165,7 @@ class TrajController:
 
         # odometry publish
         odom = Odometry()
+
         odom.header.frame_id = 'map'
         odom.child_frame_id = 'odom'
         odom.header.stamp = rospy.Time.now()
