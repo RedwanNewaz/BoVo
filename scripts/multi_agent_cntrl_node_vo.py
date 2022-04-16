@@ -86,6 +86,7 @@ if __name__ == '__main__':
     mas = MultiAgentSystem()
     print('waiting for sensor_reading')
     rospy.wait_for_service('sensor_reading')
+    sleep(5)
     print('node started')
     mas.start()
     mas.join()

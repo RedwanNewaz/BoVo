@@ -109,14 +109,14 @@ class TrajController:
         marker.action = Marker.ADD
 
         marker.type = Marker.MESH_RESOURCE
-        # marker.mesh_resource = "file:///home/redwan/ros_catkin_place/catkin_roomba/src/irobotcreate2ros/iRobot/iRobot2.dae"
-        marker.mesh_resource = "package://traj_view/config/iRobot2.dae"
+        # marker.mesh_resource = "file:///home/redwan/Blender/ROOMBA.dae"
+        marker.mesh_resource = "package://traj_view/config/ROOMBA.dae"
         # set up scale of the points
-        marker.scale.x = 1
-        marker.scale.y = 1
-        marker.scale.z = 1
+        marker.scale.x = 0.1
+        marker.scale.y = 0.1
+        marker.scale.z = 0.1
 
-        marker.color.a = 0.80
+        marker.color.a = 0.90
         marker.color.r = 0.663
         marker.color.g = 0.663
         marker.color.b = 0.663
@@ -125,7 +125,7 @@ class TrajController:
         marker.pose.position.y = state[1]
         marker.pose.position.z = 0.0
 
-        q = quaternion_from_euler(0, 0, state[-1])
+        q = quaternion_from_euler(0, 0, state[-1] + 1.57)
         marker.pose.orientation.x = q[0]
         marker.pose.orientation.y = q[1]
         marker.pose.orientation.z = q[2]
