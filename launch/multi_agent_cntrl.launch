@@ -7,7 +7,7 @@
         <node pkg="traj_view" type="roomba_controller.py" name="trajController20" >
             <rosparam param="name">"roomba20"</rosparam>
             <rosparam param="action_topic">"/move_base_simple/goal20"</rosparam>
-            <rosparam param="init_pos">[0, 0, 0]</rosparam>
+            <rosparam param="init_pos">[0.245, -0.245, 0]</rosparam>
         </node>
         <node pkg="robot_localization" type="ekf_localization_node" name="ekf_roomba20" clear_params="true">
             <rosparam command="load" file="$(find traj_view)/config/ekf_roomba20.yaml" />
@@ -19,7 +19,7 @@
         <node pkg="traj_view" type="roomba_controller.py" name="trajController21" >
             <rosparam param="name">"roomba21"</rosparam>
             <rosparam param="action_topic">"/move_base_simple/goal21"</rosparam>
-            <rosparam param="init_pos">[0, -2, 0]</rosparam>
+            <rosparam param="init_pos">[0.245, -1.85, 0]</rosparam>
         </node>
         <node pkg="robot_localization" type="ekf_localization_node" name="ekf_roomba21" clear_params="true" >
             <rosparam command="load" file="$(find traj_view)/config/ekf_roomba21.yaml" />
@@ -34,8 +34,8 @@
 
     <node pkg="traj_view" type="multi_agent_cntrl_node.py" name="trajViewer"  output="screen">
         <rosparam param="radius">0.4</rosparam>
-        <rosparam param="robot20">[[0, 0], [1.5, 0], [1.5, -1], [0, -1], [0, -2], [0, -2]]</rosparam>
-        <rosparam param="robot21">[[0, -2], [1.5, -2], [1.5, -1], [0, -1], [0, 0], [0, 0]]</rosparam>
+        <rosparam param="robot20">[[0.245, -0.245], [1.5, 0], [1.5, -1], [0, -1], [0, -2], [0, -2]]</rosparam>
+        <rosparam param="robot21">[[0.245, -1.85], [1.5, -2], [1.5, -1], [0, -1], [0, 0], [0, 0]]</rosparam>
         <rosparam param="goal_topics">['/move_base_simple/goal20', '/move_base_simple/goal21']</rosparam>
     </node>
 

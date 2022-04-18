@@ -101,7 +101,8 @@ class MultiAgentSystem(Thread):
 
     # circular obstacles, format [x,y,rad]
     # no obstacles
-    ws_model['circular_obstacles'] = []
+    ws_model['circular_obstacles'] = [ ]
+
     # with obstacles
     # ws_model['circular_obstacles'] = [[-0.3, 2.5, 0.3], [1.5, 2.5, 0.3], [3.3, 2.5, 0.3], [5.1, 2.5, 0.3]]
     # rectangular boundary, format [x,y,width/2,heigth/2]
