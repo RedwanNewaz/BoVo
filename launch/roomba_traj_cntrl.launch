@@ -9,6 +9,6 @@
         <rosparam param="action_topic">"/move_base_simple/goal"</rosparam>
         <rosparam param="init_pos">[0, 0, 0]</rosparam>
     </node>
-    <node pkg="map_server" type="map_server" args="/home/redwan/catkin_ws/src/traj_view/config/mymap.yaml" name="mapserver" />
-    <node pkg="rviz" type="rviz" name="roomba_rviz" args="-d /home/redwan/catkin_ws/src/traj_view/config/roomba_traz.rviz" />
+    <node pkg="map_server" type="map_server" args="/home/robo/catkin_roomba/src/BoVo/config/mymap.yaml" name="mapserver" />
+    <node pkg="rviz" type="rviz" name="roomba_rviz" args="-d /home/robo/catkin_roomba/src/BoVo/config/roomba_traz.rviz" />
 </launch>

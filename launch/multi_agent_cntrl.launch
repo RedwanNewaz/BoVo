@@ -29,8 +29,8 @@
 
 
 
-    <node pkg="map_server" type="map_server" args="/home/redwan/catkin_ws/src/traj_view/config/mymap.yaml" name="mapserver" />
-    <node pkg="rviz" type="rviz" name="roomba_rviz" args="-d /home/redwan/catkin_ws/src/traj_view/config/multi_agent_traz_top.rviz" />
+    <node pkg="map_server" type="map_server" args="/home/robo/catkin_roomba/src/BoVo/config/mymap.yaml" name="mapserver" />
+    <node pkg="rviz" type="rviz" name="roomba_rviz" args="-d /home/robo/catkin_roomba/src/BoVo/config/multi_agent_traz_top.rviz" />
 
     <node pkg="traj_view" type="multi_agent_cntrl_node.py" name="trajViewer"  output="screen">
         <rosparam param="radius">0.4</rosparam>

@@ -1,0 +1,7 @@
+<launch>
+    <group ns="roomba21">
+        <node pkg="traj_view" type="test_trajectory.py" name="testtraj"/>
+        <node pkg="traj_view" type="roomba_controller.py" name="trajController" output="screen"/>
+    </group>
+
+</launch>
