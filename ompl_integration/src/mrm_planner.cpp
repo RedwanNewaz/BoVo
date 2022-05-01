@@ -98,6 +98,37 @@ WP MMP::get_neightbors(float x, float y, unsigned long k) {
     return res;
 }
 
+void MMP::recursive_collision_checker(const TRAJECTORY *data, int currIndex, int N,
+                                      vector<int> &indexes, vector<bool> &results)
+{
+    // when k = 2 combination pair is found
+    // we can only compute collision between two trajectories only
+    if(indexes.size() == 2)
+    {
+        bool collision = isCollision(data[indexes[0]], data[indexes[1]]);
+        results.push_back(collision);
+        return;
+    }
+    for (int i = currIndex; i <N; ++i) {
+        indexes.push_back(i);
+        recursive_collision_checker(data, i + 1, N, indexes, results);
+        indexes.pop_back();
+    }
+}
+
+bool MMP::isValidTrajectories(TRAJECTORY *data, int N) {
+
+    vector<int> indexes;
+    vector<bool> results;
+    recursive_collision_checker(data, 0, N, indexes, results);
+    // collision count will be zero if there is no collision
+    auto collisionCount = std::count(results.begin(), results.end(), true);
+    // trajectories are valid if they don't collide
+    return collisionCount == 0;
+}
+
+
+
 
 
 

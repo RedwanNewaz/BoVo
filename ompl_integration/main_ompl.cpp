@@ -35,7 +35,8 @@ void motion_planning_demo(ObstclesPtr obstacles, int N=2)
         TRAJECTORY robo_traj[N];
         mmp.generate_motion(paths, robo_traj);
 
-        isValid = !mmp.isCollision(robo_traj[0], robo_traj[1]);
+//        isValid = !mmp.isCollision(robo_traj[0], robo_traj[1]);
+        isValid = mmp.isValidTrajectories(robo_traj, N);
         if(isValid)
         {
             for (int i = 0; i < N; ++i) {
