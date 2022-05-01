@@ -67,27 +67,23 @@ void MapParser::animation(const TRAJECTORY* motion, int N, const std::function<W
     auto img = background_show();
     int height = img_.size[0]; // y_axis
     int width = img_.size[1]; // x_axis
-    size_t min_len = std::numeric_limits<size_t>::max();
-    int min_index = 0;
     size_t max_len = 0;
     // if robots have different trajectory we need to figure out when to stop iteration
     // for the one which has shorter trajectory length
     for (int i = 0; i < N; ++i) {
         auto rtraj_len = motion[i].x.size();
-        if(rtraj_len < min_len)
-        {
-            min_len = rtraj_len;
-            min_index = i;
-        }
         max_len = max(rtraj_len, max_len);
     }
-    cv::Scalar colors[2] ={{0,0,255}, {0,255,255}};
+    cv::Scalar colors[] ={{0,0,255}, {0,255,255}, {255,0,255}, {79,79,47}, {105,105,105}, {144,128,112} };
     for (int i = 0; i < max_len; ++i) {
         auto working_img = img.clone();
         for (int j = 0; j < N; ++j) {
 
-            if(i >= min_len && j == min_index)
+            // this robot already reached its destination, so don't iterate more!
+            if(i >= motion[j].x.size())
                 continue;
+
+
             cout << "[Robot]" << j << " | z = "<< get_reading(motion[j].x[i], motion[j].y[i]) << endl;
             float rx(motion[j].x[i]), ry(motion[j].y[i]); // robot position in workspace
             int x = image_scale(rx, width);

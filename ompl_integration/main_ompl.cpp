@@ -8,14 +8,14 @@ using namespace std;
 
 int Robot::robotID = 0;
 
-void motion_planning_demo(ObstclesPtr obstacles, int N=2)
+void motion_planning_demo(ObstclesPtr obstacles, int N=3)
 {
     MMP mmp(obstacles);
 
     //disable cout output in the runtime
 
     std::cout.setstate(std::ios_base::failbit);
-    const vector<float> s{0, 1}, g{20, 15};
+    const vector<float> s{0, 1}, g{20, 15}, s1{0, 15}, g1{20, 1};
 
     string image_path = "../../resources/chlorophyll.png";
     MapParser z_map(image_path, obstacles);
@@ -23,6 +23,7 @@ void motion_planning_demo(ObstclesPtr obstacles, int N=2)
     TRAJECTORY meas_traj[N];
     auto path1 = mmp.generate_path(s, g );
     auto path2 = mmp.generate_path( g, s);
+    auto path3 = mmp.generate_path( s1, g1);
 
 
     int elapsed = 0;
@@ -31,11 +32,10 @@ void motion_planning_demo(ObstclesPtr obstacles, int N=2)
     const auto start = std::chrono::steady_clock::now();
 
     do {
-        vector<WP> paths{path1, path2};
+        vector<WP> paths{path1, path2, path3};
         TRAJECTORY robo_traj[N];
         mmp.generate_motion(paths, robo_traj);
 
-//        isValid = !mmp.isCollision(robo_traj[0], robo_traj[1]);
         isValid = mmp.isValidTrajectories(robo_traj, N);
         if(isValid)
         {
