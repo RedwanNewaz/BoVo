@@ -32,14 +32,14 @@ public:
      */
     void generate_motion(const vector<WP>& paths, TRAJECTORY *robo_traj);
 
-    /**
-     * TRAJECTORY class is defined in helper.h
-     * @param A trajectory of robot A : vector<float>x, y
-     * @param B trajectory of robot B : vector<float>x, y
-     * @return true if collision otherwise false
-     */
-    bool isCollision(const TRAJECTORY& A, const TRAJECTORY& B);
 
+    /**
+     * given a location find its nearest neighbors
+     * @param x location in x axis
+     * @param y location in y axis
+     * @param k number of neighbors
+     * @return neighbors coordinates
+     */
     WP get_neightbors(float x, float y, unsigned long k);
 
     /**
@@ -81,6 +81,14 @@ protected:
      * @param results a set of collision flags
      */
     void recursive_collision_checker(const TRAJECTORY* data, int currIndex, int N, vector<int>&indexes, vector<bool>&results);
+
+    /**
+     * TRAJECTORY class is defined in helper.h
+     * @param A trajectory of robot A : vector<float>x, y
+     * @param B trajectory of robot B : vector<float>x, y
+     * @return true if collision otherwise false
+     */
+    bool isCollision(const TRAJECTORY& A, const TRAJECTORY& B);
 
 };
 

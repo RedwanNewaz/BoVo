@@ -109,7 +109,7 @@ void MMP::recursive_collision_checker(const TRAJECTORY *data, int currIndex, int
         results.push_back(collision);
         return;
     }
-    for (int i = currIndex; i <N; ++i) {
+    for (int i = currIndex; i < N; ++i) {
         indexes.push_back(i);
         recursive_collision_checker(data, i + 1, N, indexes, results);
         indexes.pop_back();
