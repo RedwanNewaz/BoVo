@@ -99,14 +99,15 @@ WP MMP::get_neightbors(float x, float y, unsigned long k) {
 }
 
 void MMP::recursive_collision_checker(const TRAJECTORY *data, int currIndex, int N,
-                                      vector<int> &indexes, vector<bool> &results)
+                                      vector<int> &indexes, vector<future<bool>> &results)
 {
     // when k = 2 combination pair is found
     // we can only compute collision between two trajectories only
     if(indexes.size() == 2)
     {
-        bool collision = isCollision(data[indexes[0]], data[indexes[1]]);
-        results.push_back(collision);
+//        bool collision = isCollision(data[indexes[0]], data[indexes[1]]);
+        auto f = [&](const TRAJECTORY& A, const TRAJECTORY& B){return isCollision(A, B);};
+        results.push_back(std::async(f, data[indexes[0]], data[indexes[1]]));
         return;
     }
     for (int i = currIndex; i < N; ++i) {
@@ -119,12 +120,14 @@ void MMP::recursive_collision_checker(const TRAJECTORY *data, int currIndex, int
 bool MMP::isValidTrajectories(TRAJECTORY *data, int N) {
 
     vector<int> indexes;
-    vector<bool> results;
+    vector<future<bool>> results;
     recursive_collision_checker(data, 0, N, indexes, results);
     // collision count will be zero if there is no collision
-    auto collisionCount = std::count(results.begin(), results.end(), true);
+    for(auto& r:results)
+        if(r.get())
+            return false;
     // trajectories are valid if they don't collide
-    return collisionCount == 0;
+    return true;
 }
 
 

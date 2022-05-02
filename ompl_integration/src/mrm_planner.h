@@ -9,6 +9,7 @@
 #include "ompl_planner.h"
 #include "hrvo_agent.h"
 #include <unordered_set>
+#include <future>
 
 class MMP{
     /**
@@ -80,7 +81,7 @@ protected:
      * @param indexes a set of evaluation indexes
      * @param results a set of collision flags
      */
-    void recursive_collision_checker(const TRAJECTORY* data, int currIndex, int N, vector<int>&indexes, vector<bool>&results);
+    void recursive_collision_checker(const TRAJECTORY* data, int currIndex, int N, vector<int>&indexes, vector<future<bool>>&results);
 
     /**
      * TRAJECTORY class is defined in helper.h
