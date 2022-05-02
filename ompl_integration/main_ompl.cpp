@@ -8,7 +8,7 @@ using namespace std;
 
 int Robot::robotID = 0;
 
-void motion_planning_demo(ObstclesPtr obstacles, int N=3)
+void motion_planning_demo(ObstclesPtr obstacles, int N=4)
 {
     MMP mmp(obstacles);
 
@@ -24,6 +24,7 @@ void motion_planning_demo(ObstclesPtr obstacles, int N=3)
     auto path1 = mmp.generate_path(s, g );
     auto path2 = mmp.generate_path( g, s);
     auto path3 = mmp.generate_path( s1, g1);
+    auto path4 = mmp.generate_path(  g1, s1);
 
 
     int elapsed = 0;
@@ -32,7 +33,7 @@ void motion_planning_demo(ObstclesPtr obstacles, int N=3)
     const auto start = std::chrono::steady_clock::now();
 
     do {
-        vector<WP> paths{path1, path2, path3};
+        vector<WP> paths{path1, path2, path3, path4};
         TRAJECTORY robo_traj[N];
         mmp.generate_motion(paths, robo_traj);
 
@@ -68,6 +69,7 @@ void motion_planning_demo(ObstclesPtr obstacles, int N=3)
         std::cout << "[Plan] found valid plan at iteration = " << iteration << " | elapsed time " << elapsed << " ms\n";
     }
     else{
+        std::cout.clear();
         std::cout << "[Plan] No valid solution found !!" << endl;
     }
 
