@@ -62,11 +62,15 @@ void motion_planning_demo(ObstclesPtr obstacles, int N=3)
             return mmp.get_neightbors(x, y, k);
         };
         z_map.animation(meas_traj, N, f);
+        // enable cout again
+        std::cout.clear();
+
+        std::cout << "[Plan] found valid plan at iteration = " << iteration << " | elapsed time " << elapsed << " ms\n";
+    }
+    else{
+        std::cout << "[Plan] No valid solution found !!" << endl;
     }
 
-    // enable cout again
-    std::cout.clear();
-    std::cout << "[Plan] found valid plan at iteration = " << iteration << " | elapsed time " << elapsed << " ms\n";
 
 }
 

@@ -105,7 +105,6 @@ void MMP::recursive_collision_checker(const TRAJECTORY *data, int currIndex, int
     // we can only compute collision between two trajectories only
     if(indexes.size() == 2)
     {
-//        bool collision = isCollision(data[indexes[0]], data[indexes[1]]);
         auto f = [&](const TRAJECTORY& A, const TRAJECTORY& B){return isCollision(A, B);};
         results.push_back(std::async(f, data[indexes[0]], data[indexes[1]]));
         return;
