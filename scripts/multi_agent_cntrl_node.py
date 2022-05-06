@@ -173,6 +173,8 @@ class MultiAgentSystem(Thread):
 
 if __name__ == '__main__':
     rospy.init_node('roomba_traj_viewer', anonymous=True)
+    rospy.get_namespace()
+
     mas = MultiAgentSystem()
     print('waiting for sensor_reading')
     rospy.wait_for_service('sensor_reading')

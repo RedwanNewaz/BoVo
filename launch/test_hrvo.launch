@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="traj_view" type="traj_view_node" name="trajViewer" output="screen"/>
+     <node pkg="map_server" type="map_server" args="/home/redwan/catkin_ws/src/traj_view/config/mymap.yaml" name="mapserver" />
+    <node pkg="rviz" type="rviz" name="roomba_rviz" args="-d /home/redwan/catkin_ws/src/traj_view/config/multi_agent_traz_top.rviz" />
+</launch>
