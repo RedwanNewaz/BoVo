@@ -8,6 +8,7 @@ controller::controller(const vector<double>&state, double kpRho, double kpAlpha,
 kp_rho_(kpRho), kp_alpha_(kpAlpha),kp_beta_(kpBeta), state_(state), dt_(dt), goal_thres_(goal_thres)
 {
     this->goal_.resize(3);
+
 }
 
 void controller::set_points(double x, double y) {
@@ -45,32 +46,24 @@ std::tuple<double, double, double>  controller::calc_control_command(double x_di
     return make_tuple(rho, v, w);
 }
 
-std::pair<double, double> controller::compute_control() {
+std::pair<double, double> controller::compute_control(StateTransitionPtr transition) {
+
+    transition->update_state(state_);
     double x_diff = goal_[0] - state_[0];
     double y_diff = goal_[1] - state_[1];
     double v, w;
     std::tie(rho_, v, w) = calc_control_command(x_diff, y_diff, state_[2], goal_[2]);
 
-    auto clip = [](double val, double clip_val){
-        auto sign = (val < 0)? -1 : 1;
-        auto x = abs(val);
-        val = min(x, clip_val) * sign;
-        return val;
-    };
-
-    v = clip(v, 1.5 * 2);
-    w = clip(w, 0.7* 2);
+    v = transition->clip_vel(v);
+    w = transition->clip_yaw_rate(w);
 
     if(rho_ <= goal_thres_)
         v = w = 0.0;
 
+    auto cmd_vel = make_pair(v, w);
+    transition->set_control(cmd_vel);
 
-    double theta = state_[2] + w * dt_;
-    state_[0] += v * cos(theta) * dt_;
-    state_[1] += v * sin(theta) * dt_;
-    state_[2] = theta;
-
-    return make_pair(v, w);
+    return cmd_vel;
 
 }
 

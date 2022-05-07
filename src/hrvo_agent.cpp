@@ -26,11 +26,11 @@ void Robot::set_path(const vector<vector<float>> & path)
     update_goal();
 }
 
-void Robot::start()
+void Robot::start(StateTransitionPtr state)
 {
     hrvo_loop_ = thread(&Robot::run, this);
     if(enable_controller_)
-        cntrl_loop_ = new thread(&Robot::control_loop, this);
+        cntrl_loop_ = new thread(&Robot::control_loop,  this, state);
 
 }
 
@@ -112,12 +112,12 @@ void Robot::set_pid_controller(double kpRho, double kpAlpha, double kpBeta, doub
     enable_controller_ = true;
 }
 
-void Robot::control_loop()
+void Robot::control_loop(StateTransitionPtr state)
 {
     chrono::milliseconds cntrl_time(control_dt_);
     do
     {
-        auto cmd_vel = cntrl_->compute_control();
+        auto cmd_vel = cntrl_->compute_control(state);
         if(callback_)
         {
 
@@ -158,11 +158,12 @@ void MissionCoordinator::doSetup(const MissionSetup& mission, const std::functio
 
 }
 
-void MissionCoordinator::execute()
+void MissionCoordinator::execute(vector<StateTransitionPtr>& states)
 {
     // start thread for each robot
+    int count = 0;
     for (auto& robot:robots_) {
-        robot->start();
+        robot->start(states[count++]);
     }
 
     bool allFinished = false;

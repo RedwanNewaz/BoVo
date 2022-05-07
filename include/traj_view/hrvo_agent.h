@@ -58,7 +58,7 @@ public:
      * each robot will be running in a separate thread.
      * This function will operate robot in a separate thread
      */
-    void start();
+    void start(StateTransitionPtr state);
     void update_position(const Vector2& pos);
     /**
      *
@@ -93,7 +93,7 @@ protected:
      * this function will generate control commands
      * @param callback from main function (entry point)
      */
-    void control_loop();
+    void control_loop(StateTransitionPtr state);
 
 
 private:
@@ -148,7 +148,7 @@ public:
     /**
      * generate execution commands for multiple robots
      */
-    void execute();
+    void execute(vector<StateTransitionPtr>& states);
 
     virtual ~MissionCoordinator();
 

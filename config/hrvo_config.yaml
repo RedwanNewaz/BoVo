@@ -19,4 +19,7 @@ hrvo:
   radius: 0.1725
 controller:
   dt: 0.01
+  max_vel: 1.5
+  max_yaw_rate: 1.5
   gain: [0.9, 1.5, 0.3]
+  topics: ["/roomba20/cmd_vel", "/roomba21/cmd_vel"]

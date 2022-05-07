@@ -9,8 +9,80 @@
 #include <math.h>
 #include <tuple>
 #include <iostream>
-
+#include <memory>
 using namespace std;
+
+
+class controller;
+class StateTransition;
+typedef shared_ptr<StateTransition> StateTransitionPtr;
+
+class StateTransition{
+public:
+    StateTransition(double dt):dt_(dt)
+    {
+        this->max_w_ = 0.7 * 2;
+        this->max_v_ = 1.5 * 2;
+    }
+    void set_control(const std::pair<double, double>& cmd_vel)
+    {
+        double v = cmd_vel.first;
+        double w = cmd_vel.second;
+        double theta = state_[2] + w * dt_;
+        state_[0] += v * cos(theta) * dt_;
+        state_[1] += v * sin(theta) * dt_;
+        state_[2] = theta;
+        cmd_vel_ = make_pair(v, w);
+    }
+    void set_state(const vector<double>& state)
+    {
+        state_.clear();
+        std::copy(state.begin(), state.end(), back_inserter(state_));
+    }
+
+    void set_max_vel(double vmax)
+    {
+        max_v_ = vmax;
+    }
+
+    void set_max_yaw_rate(double wmax)
+    {
+        max_w_ = wmax;
+    }
+    template <typename T>
+    void update_cmd_vel(T* data)
+    {
+        data = new T{cmd_vel_.first, cmd_vel_.second};
+    }
+
+    template <typename T>
+    void update_state(T& data)
+    {
+        for (int i = 0; i < state_.size(); ++i) {
+            data[i] = state_[i];
+        }
+    }
+    double clip_vel(double v)
+    {
+        return clip(v, max_v_);
+    }
+    double clip_yaw_rate(double w)
+    {
+        return clip(w, max_w_);
+    }
+protected:
+    double clip(double val, double clip_val){
+        auto sign = (val < 0)? -1 : 1;
+        auto x = abs(val);
+        val = min(x, clip_val) * sign;
+        return val;
+    }
+private:
+    vector<double> state_;
+    std::pair<double, double> cmd_vel_;
+    double dt_, max_v_, max_w_;
+};
+
 
 class controller {
 public:
@@ -24,7 +96,7 @@ public:
      */
     controller(const vector<double>&state, double kpRho, double kpAlpha, double kpBeta, double dt, double goal_thres = 0.01);
     void set_points(double x, double y);
-    std::pair<double, double> compute_control();
+    std::pair<double, double> compute_control(StateTransitionPtr transition);
     bool isFinished();
     /**
      * get robot state [x, y, theta]
@@ -37,6 +109,7 @@ private:
     vector<double> state_, goal_;
     double dt_, rho_;
     const double goal_thres_;
+
 
 protected:
     /**
