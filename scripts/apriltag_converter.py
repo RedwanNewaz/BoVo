@@ -6,7 +6,7 @@ from apriltag_ros.msg import AprilTagDetectionArray
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from time import sleep 
 import numpy as np
-
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 class AprilTagConverter:
     def __init__(self) -> None:
@@ -20,6 +20,14 @@ class AprilTagConverter:
         rospy.loginfo(f"pose = {poseMsg} \n id = {group_id}") 
         poseMsg.header.frame_id = "camera"
         poseMsg.pose.pose.position.y *= 1.315
+        q = [poseMsg.pose.orientation.x, poseMsg.pose.orientation.y, poseMsg.pose.orientation.z, poseMsg.pose.orientation.w]
+        state = euler_from_quaternion(q)
+        q = quaternion_from_euler(0, 0, state[-1] + np.pi/2)
+        poseMsg.pose.orientation.x = q[0]
+        poseMsg.pose.orientation.y = q[1]
+        poseMsg.pose.orientation.z = q[2]
+        poseMsg.pose.orientation.w = q[3]
+
         self._pose_pubs[group_id].publish(poseMsg) 
 
     def callback_apriltag(self, msg):
