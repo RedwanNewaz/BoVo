@@ -139,6 +139,11 @@ int main(int argc, char *argv[])
     nh.getParam(fmt::format("{}/controller/max_yaw_rate", node_name), max_w);
 
 
+    vector<string> state_subs;
+    nh.getParam(fmt::format("{}/controller/subs", node_name), state_subs);
+
+
+
     WP path1, path2;
     copy_path(x0, y0, path1);
     copy_path(x1, y1, path2);
@@ -147,12 +152,14 @@ int main(int argc, char *argv[])
 
     vector<WP> paths{path1, path2};
     vector<StateTransitionPtr> states;
+    int index = 0;
     for(const auto& p:paths)
     {
         auto state = make_shared<StateTransition>(contrl_time);
         state->set_state({p[0][0], p[0][1], M_PI_2});
         state->set_max_vel(max_v);
         state->set_max_yaw_rate(max_w);
+        state->set_state_sub(state_subs[index++]);
         states.emplace_back(state);
     }
 

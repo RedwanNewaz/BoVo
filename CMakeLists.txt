@@ -144,7 +144,7 @@ set(SRC_FILES
         src/controller.cpp
         src/hrvo_agent.cpp
         include/traj_view/map_parser.h
-        include/traj_view/viz_plan.h)
+        include/traj_view/viz_plan.h include/traj_view/state_transition.h)
 add_executable(${PROJECT_NAME}_node src/traj_view_node.cpp ${SRC_FILES})
 
 ## Rename C++ executable without prefix
