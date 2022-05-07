@@ -25,7 +25,7 @@ class RobotTracker{
 public:
     // x, y , theta, mes
     using state = std::array<float, STATE_DIM>;
-    RobotTracker(const vector<WP> &paths, vector<StateTransitionPtr> statesPtr) : statesPtr_(statesPtr) {
+    RobotTracker(const vector<WP> &paths, const vector<StateTransitionPtr>& statesPtr) : statesPtr_(statesPtr) {
         auto node_name = ros::this_node::getName();
         auto current_path = ros::package::getPath("traj_view");
 
