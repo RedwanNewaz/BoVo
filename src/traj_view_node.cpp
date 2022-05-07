@@ -121,11 +121,16 @@ int main(int argc, char *argv[])
     auto node_name = ros::this_node::getName();
     auto current_path = ros::package::getPath("traj_view");
 
-    float sim_time, contrl_time, radius;
+    float sim_time,  radius;
+    float neigh_dist, max_neigh, pref_speed, max_speed;
 
     nh.getParam(fmt::format("{}/hrvo/dt", node_name), sim_time);
-    nh.getParam(fmt::format("{}/controller/dt", node_name), contrl_time);
     nh.getParam(fmt::format("{}/hrvo/radius", node_name), radius);
+    nh.getParam(fmt::format("{}/hrvo/neighbor_dist", node_name), neigh_dist);
+    nh.getParam(fmt::format("{}/hrvo/max_neighbors", node_name), max_neigh);
+    nh.getParam(fmt::format("{}/hrvo/pref_speed", node_name), pref_speed);
+    nh.getParam(fmt::format("{}/hrvo/max_speed", node_name), max_speed);
+
 
     vector<float> x0, y0, x1, y1;
 
@@ -134,13 +139,15 @@ int main(int argc, char *argv[])
     nh.getParam(fmt::format("{}/paths/x1", node_name), x1);
     nh.getParam(fmt::format("{}/paths/y1", node_name), y1);
 
-    double max_v, max_w;
+    float max_v, max_w, contrl_time;
     nh.getParam(fmt::format("{}/controller/max_vel", node_name), max_v);
     nh.getParam(fmt::format("{}/controller/max_yaw_rate", node_name), max_w);
+    nh.getParam(fmt::format("{}/controller/dt", node_name), contrl_time);
 
 
     vector<string> state_subs;
     nh.getParam(fmt::format("{}/controller/subs", node_name), state_subs);
+
 
 
 
@@ -168,7 +175,7 @@ int main(int argc, char *argv[])
     vector<double> gain_params;
     nh.getParam(fmt::format("{}/controller/gain", node_name), gain_params);
     std::copy_n(gain_params.begin(), gain_params.size(), gain.values.begin());
-    HRVOParams param{20,10, 0.25, 0.50};
+    HRVOParams param{neigh_dist,(size_t)max_neigh, pref_speed, max_speed};
     MissionSetup mission{paths, radius, sim_time, contrl_time, gain, param};
 
     RobotTracker traker({path1, path2}, states);
