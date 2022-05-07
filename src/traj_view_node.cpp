@@ -34,17 +34,21 @@ public:
         string param_low = fmt::format("{}/map/low", node_name);
         string param_high = fmt::format("{}/map/high", node_name);
         string param_img = fmt::format("{}/map/img", node_name);
+        string topic_viz = fmt::format("{}/map/topics/viz", node_name);
+        string topic_field = fmt::format("{}/map/topics/field", node_name);
 
         nh_.getParam(param_low, low);
         nh_.getParam(param_high, high);
         nh_.getParam(param_img, image_file);
+
+        nh_.getParam(topic_viz, topic_viz);
+        nh_.getParam(topic_field, topic_field);
+
         image_file = fmt::format("{}/{}", current_path, image_file);
 
         map_ = make_unique<MapParser>(image_file, low, high);
-
-//        map_ = make_unique<MapParser>("/home/redwan/catkin_ws/src/traj_view/config/map/chlorophyll.png", 0, 2);
-        viz_ = make_unique<VizPlan>("/roomba20/path");
-        pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("/stf/data", 1);
+        viz_ = make_unique<VizPlan>(topic_viz);
+        pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>(topic_field, 1);
 
         trakers_.resize(paths.size());
         for (int robotId = 0; robotId < paths.size(); ++robotId) {
@@ -127,12 +131,10 @@ int main(int argc, char *argv[])
     WP path1, path2;
     copy_path(x0, y0, path1);
     copy_path(x1, y1, path2);
-//
+
 //    // simulation setup
-//    WP path1{{1, 0}, {1.5, 0}, {1.5, 1}, {0, 1}, {0, 2}};
-//    WP path2{{0, 2}, {1.5, 2}, {1.5, 1}, {0, 1}, {1, 0}};
     vector<WP> paths{path1, path2};
-    PIDGains gain;
+    PIDGains gain{};
     vector<double> gain_params;
     nh.getParam(fmt::format("{}/controller/gain", node_name), gain_params);
     std::copy_n(gain_params.begin(), gain_params.size(), gain.values.begin());
@@ -144,8 +146,6 @@ int main(int argc, char *argv[])
     MissionCoordinator missionCoordinator;
     missionCoordinator.doSetup(mission, [&](int robotId, const Vector2& cmd_vel){traker.hrvo_callback(robotId, cmd_vel);});
     missionCoordinator.execute();
-
-//    ros::spin();
 
     return 0;
 }

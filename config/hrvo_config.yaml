@@ -2,6 +2,9 @@ map:
   img: "config/map/chlorophyll.png"
   low: 0
   high: 2
+  topics:
+    viz: "/roomba20/path"
+    field: "/stf/data"
 paths:
   x0 : [1,1.5,1.5,0,0]
   y0 : [0, 0, 1, 1, 2]
