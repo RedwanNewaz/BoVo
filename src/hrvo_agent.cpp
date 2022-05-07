@@ -150,7 +150,7 @@ void MissionCoordinator::doSetup(const MissionSetup& mission, const std::functio
         auto robot = make_shared<Robot>(Vector2(path[0][0], path[0][1]), radius, sim_, callback);
         robot->set_path(path);
 #ifndef HRVO_SIMULATION_DRIVE
-        auto gain_ = mission.gains[0];
+        auto gain_ = mission.gain;
         robot->set_pid_controller(gain_.kpRho, gain_.kpAlpha, gain_.kpBeta, mission.control_step);
 #endif
         robots_.push_back(robot);

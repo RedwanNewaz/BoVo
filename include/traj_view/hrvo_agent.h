@@ -115,7 +115,14 @@ private:
 
 typedef vector<vector<float>> WP; // short for waypoints
 struct PIDGains{
-    double kpRho, kpAlpha, kpBeta;
+    union{
+        struct{
+            double kpRho, kpAlpha, kpBeta;
+        };
+        struct{
+            std::array<double, 3> values;
+        };
+    };
 };
 struct HRVOParams{
     float neighborDist;
@@ -129,7 +136,7 @@ struct MissionSetup{
     float robot_radius;
     float simulation_step;
     float control_step;
-    vector<PIDGains> gains;
+    PIDGains gain;
     HRVOParams param;
 };
 

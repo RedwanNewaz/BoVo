@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   nav_msgs
-  message_generation tf
+  message_generation tf roslib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -131,6 +131,7 @@ include_directories(
 #   src/traj_view_node.cpp
 # )
 CPMAddPackage("gh:snape/HRVO#main")
+CPMAddPackage("gh:fmtlib/fmt#7.1.3")
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -162,6 +163,7 @@ add_executable(${PROJECT_NAME}_node src/traj_view_node.cpp ${SRC_FILES})
    HRVO
    -pthread
    ${OpenCV_LIBS}
+   fmt
  )
 
 #############

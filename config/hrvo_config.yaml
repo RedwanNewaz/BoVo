@@ -1,0 +1,19 @@
+map:
+  img: "config/map/chlorophyll.png"
+  low: 0
+  high: 2
+paths:
+  x0 : [1,1.5,1.5,0,0]
+  y0 : [0, 0, 1, 1, 2]
+  x1: [0, 1.5, 1.5, 0,1]
+  y1: [2, 2, 1, 1, 0 ]
+hrvo:
+  dt: 0.10
+  neighbor_dist: 20
+  max_neighbors: 10
+  pref_speed: 0.25
+  max_speed: 0.50
+  radius: 0.1725
+controller:
+  dt: 0.01
+  gain: [0.9, 1.5, 0.3]
