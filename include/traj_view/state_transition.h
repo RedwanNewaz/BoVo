@@ -10,7 +10,7 @@
 #include <tuple>
 #include <iostream>
 #include <memory>
-
+#include <mutex>
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_datatypes.h>
@@ -18,6 +18,7 @@ using namespace std;
 
 class StateTransition;
 typedef shared_ptr<StateTransition> StateTransitionPtr;
+
 
 
 class StateTransition{
@@ -29,6 +30,7 @@ public:
     }
     void set_control(const std::pair<double, double>& cmd_vel)
     {
+        lock_guard<mutex> lk(mu_);
         double v = cmd_vel.first;
         double w = cmd_vel.second;
         double theta = state_[2] + w * dt_;
@@ -82,6 +84,7 @@ protected:
 
     void state_callback(const nav_msgs::Odometry::ConstPtr& msg)
     {
+        lock_guard<mutex> lk(mu_);
         // update x, y coordinage
         state_[0] = msg->pose.pose.position.x;
         state_[1] = msg->pose.pose.position.y;
@@ -108,6 +111,7 @@ private:
     double dt_, max_v_, max_w_;
     ros::NodeHandle nh_;
     ros::Subscriber state_sub_;
+    mutex mu_;
 };
 
 #endif //TRAJ_VIEW_STATE_TRANSITION_H

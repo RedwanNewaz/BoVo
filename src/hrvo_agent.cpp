@@ -178,8 +178,8 @@ void MissionCoordinator::execute(vector<StateTransitionPtr>& states)
             finish.push_back(robot->isFinished());
         }
         // check current state of robots: are all robots running?
-        bool allRunning = std::count_if(process.begin(), process.end(), [](bool value){return !value;}) == process.size();
-        allFinished = std::count_if(finish.begin(), finish.end(), [](bool value){return value;}) == finish.size();
+        bool allRunning = std::count(process.begin(), process.end(), false) == process.size();
+        allFinished = std::count(finish.begin(), finish.end(), true) == finish.size();
 
         sim_->doStep();
 
