@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
 
     ros::init(argc, argv, "traj_view_node");
     ros::NodeHandle nh;
-    ROS_INFO_STREAM("traj view node started");
-
+    ROS_INFO_STREAM("traj view node will start in 5s ...");
+    this_thread::sleep_for(5s);
     // read parameters
     auto node_name = ros::this_node::getName();
     auto current_path = ros::package::getPath("traj_view");
