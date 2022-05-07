@@ -20,7 +20,6 @@ class StateTransition;
 typedef shared_ptr<StateTransition> StateTransitionPtr;
 
 
-
 class StateTransition{
 public:
     StateTransition(double dt):dt_(dt)
@@ -97,6 +96,8 @@ protected:
         q.setW(msg->pose.pose.orientation.w);
 
         state_[2] = q.getAngle();
+        ROS_INFO("[Reading] robot coord = (%f, %f) theta = %f", state_[0], state_[1], state_[2]);
+
     }
 
     double clip(double val, double clip_val){

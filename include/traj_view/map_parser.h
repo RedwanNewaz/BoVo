@@ -51,16 +51,18 @@ public:
      * @return z measured value from the image i.e., filed intensity
      */
     int get_reading(float rx, float ry){
-        if( (low_ <= rx < high_) && (low_ <= ry < high_))
+        if( (low_ <= rx && rx < high_) && (low_ <= ry && ry < high_))
         {
             int height = img_.size[0]; // y_axis
             int width = img_.size[1]; // x_axis
-            int x = image_scale(rx, width);
-            int y = height - image_scale(ry, height);
-            int pixelValue = (int)img_.at<uchar>(x, y);
+            int x = image_scale(rx, width - 1);
+            int y = height - image_scale(ry, height - 1);
+            int pixelValue = 0;
+            if( (0 <= x && x < width) && (0 <= y && y < height))
+                pixelValue = (int)img_.at<uchar>(x, y);
             return pixelValue;
         }
-        return -1;
+        return 0;
     }
 
 

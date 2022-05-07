@@ -7,18 +7,18 @@ map:
     field: "/stf/data"
 paths:
   x0 : [1,1.5,1.5,0,0]
-  y0 : [0, 0, 1, 1, 2]
+  y0 : [0, 0, 1, 1, 1.7]
   x1: [0, 1.5, 1.5, 0,1]
-  y1: [2, 2, 1, 1, 0 ]
+  y1: [1.5, 1.5, 1, 1, 0 ]
 hrvo:
   dt: 0.05
   neighbor_dist: 20
   max_neighbors: 10
-  pref_speed: 0.125
-  max_speed: 0.25
+  pref_speed: 0.25
+  max_speed: 0.5
   radius: 0.1725
 controller:
-  dt: 0.01
+  dt: 0.02
   max_vel: 1.5
   max_yaw_rate: 1.5
   gain: [0.9, 1.5, 0.3]
@@ -27,4 +27,4 @@ controller:
 
 backup_pid:
   gain1: [0.9, 1.5, 0.3]
-  gain2: [0.3, 0.5, 0.1]
+  gain2: [0.3, 0.5, 0.0]

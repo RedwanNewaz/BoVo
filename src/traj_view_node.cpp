@@ -15,6 +15,8 @@ using namespace std;
 #include <ros/package.h>
 #include <geometry_msgs/Vector3Stamped.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/TwistWithCovarianceStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <fmt/format.h>
 #define STATE_DIM (4)
 
@@ -55,9 +57,14 @@ public:
         state_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>(topic_field, 1);
 
         trakers_.resize(paths.size());
-        for(const auto& topic: topics_cmds)
-            cmd_pubs_.emplace_back(nh_.advertise<geometry_msgs::Twist>(topic, 10));
+        for(const auto& topic: topics_cmds){
 
+            cmd_pubs_.emplace_back(nh_.advertise<geometry_msgs::Twist>(topic, 10));
+            cmd_pubs_ekf_.emplace_back(nh_.advertise<geometry_msgs::TwistWithCovarianceStamped>(topic + "_ekf", 10));
+        }
+
+        for(const auto& topic:{"/roomba20/apriltag", "/roomba21/apriltag"})
+            pose_pubs_.emplace_back(nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>(topic, 10));
 
     }
 
@@ -66,10 +73,11 @@ public:
         statesPtr_[robotId]->update_state(trakers_[robotId]);
         float z = map_->get_reading(trakers_[robotId][0], trakers_[robotId][1])/255.0;
         trakers_[robotId][3] = z;
-        ROS_INFO("[Reading] robot = %d coord = (%f, %f) z = %f", robotId, trakers_[robotId][0], trakers_[robotId][1], z);
+//        ROS_INFO("[Reading] robot = %d coord = (%f, %f) z = %f", robotId, trakers_[robotId][0], trakers_[robotId][1], z);
         viz_->update_robot(robotId, Vector2{trakers_[robotId][0], trakers_[robotId][1]}, trakers_[robotId][2] + M_PI_2);
         publish_state_message(robotId);
         publish_cmd_message(robotId, cmd_vel);
+        publish_pose_message(robotId);
     }
 protected:
     void publish_state_message(int robotID)
@@ -89,6 +97,32 @@ protected:
         msg.linear.x = cmd_vel.getX();
         msg.angular.z = cmd_vel.getY();
         cmd_pubs_[robotID].publish(msg);
+
+        geometry_msgs::TwistWithCovarianceStamped twist;
+        twist.header.stamp = ros::Time::now();
+        twist.header.frame_id = "map";
+
+        twist.twist.twist.linear.x = cmd_vel.getX();
+        twist.twist.twist.angular.z = cmd_vel.getY();
+        cmd_pubs_ekf_[robotID].publish(twist);
+    }
+
+    void publish_pose_message(int robotID)
+    {
+        geometry_msgs::PoseWithCovarianceStamped msg;
+        msg.header.frame_id = "map";
+        msg.header.stamp = ros::Time::now();
+
+        msg.pose.pose.position.x = trakers_[robotID][0];
+        msg.pose.pose.position.y = trakers_[robotID][1];
+
+        tf::Quaternion q;
+        q.setRPY(0, 0, trakers_[robotID][2]);
+        msg.pose.pose.orientation.x = q.getX();
+        msg.pose.pose.orientation.y = q.getY();
+        msg.pose.pose.orientation.z = q.getZ();
+        msg.pose.pose.orientation.w = q.getW();
+        pose_pubs_[robotID].publish(msg);
     }
 
 private:
@@ -97,7 +131,7 @@ private:
     unique_ptr<MapParser> map_;
     ros::NodeHandle nh_;
     ros::Publisher state_pub_;
-    vector<ros::Publisher> cmd_pubs_;
+    vector<ros::Publisher> cmd_pubs_, cmd_pubs_ekf_, pose_pubs_;
     vector<StateTransitionPtr> statesPtr_;
 };
 
@@ -178,10 +212,11 @@ int main(int argc, char *argv[])
     HRVOParams param{neigh_dist,(size_t)max_neigh, pref_speed, max_speed};
     MissionSetup mission{paths, radius, sim_time, contrl_time, gain, param};
 
-    RobotTracker traker({path1, path2}, states);
-
+    ros::AsyncSpinner spinner(4);
+    spinner.start();
+    RobotTracker tracker(paths, states);
     MissionCoordinator missionCoordinator;
-    missionCoordinator.doSetup(mission, [&](int robotId, const Vector2& cmd_vel){traker.hrvo_callback(robotId, cmd_vel);});
+    missionCoordinator.doSetup(mission, [&](int robotId, const Vector2& cmd_vel){tracker.hrvo_callback(robotId, cmd_vel);});
     missionCoordinator.execute(states);
 
     return 0;
