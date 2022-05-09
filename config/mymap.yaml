@@ -1,0 +1,7 @@
+image: map/chlorophyll.png
+resolution: 0.0016
+origin: [0.0, 0.0, 0.0]
+occupied_thresh: 1.0
+free_thresh: 0.0
+negate: 0
+mode: scale

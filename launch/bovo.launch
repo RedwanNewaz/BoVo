@@ -1,0 +1,33 @@
+<launch>
+
+    <node pkg="map_server" type="map_server" args="$(find bovo)/config/mymap.yaml" name="mapserver" />
+    <node pkg="rviz" type="rviz" name="roomba_rviz" args="-d $(find traj_view)/config/multi_agent_traz_top.rviz" />
+
+
+    <node pkg="bovo" type="bovo_node" name="bovo"/>
+    <node pkg="bovo" type="bovo_sampler.py" name="sampler" output="screen"/>
+
+    <group ns="roomba20">
+        <node pkg="bovo" type="bovo_controller" name="bovoController" output="screen">
+            <rosparam param="state">[0, 2, 4.71]</rosparam>
+            <rosparam param="pidGain">[0.9, 1.5, 0.1]</rosparam>
+            <rosparam param="poseTopic">"/roomba20/odometry/filtered"</rosparam>
+            <rosparam param="robotID">"0"</rosparam>
+            <rosparam param="dt">0.03</rosparam>
+            <rosparam param="thres">0.007</rosparam>
+        </node>
+    </group>
+
+    <group ns="roomba21">
+        <node pkg="bovo" type="bovo_controller" name="bovoController" output="screen">
+            <rosparam param="state">[1, 0, 0]</rosparam>
+            <rosparam param="pidGain">[0.9, 1.5, 0.1]</rosparam>
+            <rosparam param="poseTopic">"/roomba21/odometry/filtered"</rosparam>
+            <rosparam param="robotID">"1"</rosparam>
+            <rosparam param="dt">0.03</rosparam>
+            <rosparam param="thres">0.007</rosparam>
+        </node>
+    </group>
+
+
+</launch>
