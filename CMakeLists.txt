@@ -161,7 +161,7 @@ add_executable(${PROJECT_NAME}_controller src/controller_node.cpp src/controller
     HRVO
     -pthread
    ${OpenCV_LIBS}
-
+   fmt
   )
 
 target_link_libraries(${PROJECT_NAME}_controller
@@ -169,7 +169,7 @@ target_link_libraries(${PROJECT_NAME}_controller
         HRVO
         -pthread
         ${OpenCV_LIBS}
-
+        fmt
         )
 
 #############

@@ -6,14 +6,56 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include <tf/transform_datatypes.h>
+#include <fmt/format.h>
+#include <string>
+#include <fstream>
+#include <unordered_map>
+
+class DataLogger{
+public:
+    DataLogger(int robotID): robotID_(robotID)
+    {
+        auto line = fmt::format("x, y \n");
+        data_ = line;
+    }
+    void add_point(float x, float y)
+    {
+        auto line = fmt::format("{}, {} \n", x, y);
+        data_ += line;
+    }
+
+    void save()
+    {
+        auto resultDir = "/home/redwan/catkin_ws/src/bovo/results";
+        ofstream myfile;
+        auto outdir = fmt::format("{}/robo{}.csv", resultDir, robotID_);
+        ROS_INFO_STREAM("saving results @ " << outdir);
+        myfile.open (outdir);
+        myfile << data_;
+        myfile.close();
+    }
+    ~DataLogger()
+    {
+        save();
+    }
+
+private:
+    string data_;
+    int robotID_;
+};
+
 
 class VizPlan{
 public:
 
     VizPlan(const std::string& topic){
         state_pub_ = nh_.advertise<visualization_msgs::Marker>(topic, 100);
-    }
 
+    }
+    ~VizPlan()
+    {
+        logger_.clear();
+    }
     template<typename T>
     void update_robot(int robotID, const T& pos, double ori)
     {
@@ -54,10 +96,26 @@ public:
         marker.pose.orientation.w = q.w();
 
         state_pub_.template publish(marker);
+
+        if(logger_.find(robotID) == logger_.end())
+        {
+            logger_[robotID] = new DataLogger(robotID);
+        }
+
+        logger_[robotID]->add_point(pos.getX(), pos.getY());
+    }
+
+    void save()
+    {
+        for(auto log:logger_)
+        {
+            log.second->save();
+        }
     }
 
 private:
     ros::NodeHandle nh_;
     ros::Publisher state_pub_;
+    unordered_map<int, DataLogger*> logger_;
 };
 #endif //TRAJ_VIEW_VIZ_PLAN_H

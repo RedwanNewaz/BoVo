@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="bovo" type="BagDecoder.py" name="bagDecoder" />
+    <node pkg="rviz" type="rviz" name="roomba_rviz" args="-d $(find bovo)/config/exp4.rviz" />
+    <node pkg="map_server" type="map_server" args="$(find bovo)/config/map_exp4.yaml" name="mapserver" />
+</launch>

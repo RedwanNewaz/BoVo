@@ -4,11 +4,11 @@
     <node pkg="rviz" type="rviz" name="roomba_rviz" args="-d $(find traj_view)/config/multi_agent_traz_top.rviz" />
 
 
-    <node pkg="bovo" type="bovo_node" name="bovo"/>
+    <node pkg="bovo" type="bovo_node" name="bovo" output="screen"/>
     <node pkg="bovo" type="bovo_sampler.py" name="sampler" output="screen"/>
 
     <group ns="roomba20">
-        <node pkg="bovo" type="bovo_controller" name="bovoController" output="screen">
+        <node pkg="bovo" type="bovo_controller" name="bovoController" >
             <rosparam param="state">[0, 2, 4.71]</rosparam>
             <rosparam param="pidGain">[0.9, 1.5, 0.1]</rosparam>
             <rosparam param="poseTopic">"/roomba20/odometry/filtered"</rosparam>
@@ -19,7 +19,7 @@
     </group>
 
     <group ns="roomba21">
-        <node pkg="bovo" type="bovo_controller" name="bovoController" output="screen">
+        <node pkg="bovo" type="bovo_controller" name="bovoController">
             <rosparam param="state">[1, 0, 0]</rosparam>
             <rosparam param="pidGain">[0.9, 1.5, 0.1]</rosparam>
             <rosparam param="poseTopic">"/roomba21/odometry/filtered"</rosparam>

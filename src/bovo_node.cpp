@@ -22,7 +22,7 @@ public:
     Robot(const string& goalTopic, const string& stateTopic, const shared_ptr<Simulator> &sim, const Vector2& curr_pos, int id) : sim_(sim),
     curr_goal_(curr_pos), curr_pos_(curr_pos), robotID_(id) {
         goal_sub_ = nh_.subscribe(goalTopic, 10, &Robot::goal_callback, this);
-        state_sub_ = nh_.subscribe(stateTopic, 10, &Robot::state_callback, this);
+//        state_sub_ = nh_.subscribe(stateTopic, 10, &Robot::state_callback, this);
         state_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("/stf/data", 1);
 
         sim_->addAgent(curr_pos_, sim_->addGoal(curr_goal_));
@@ -65,11 +65,18 @@ public:
     {
         curr_pos_ = sim_->getAgentPosition(robotID_);
         auto diff = curr_goal_-curr_pos_;
-        float theta = (initialize_)?angle_:atan2(diff.getY(), diff.getX());
-//        viz_->update_robot(robotID_, curr_pos_, theta);
+        auto goalAngle = atan2(diff.getY(), diff.getX());
+        float theta = (initialize_)?angle_:M_PI_2;
+        if(!initialize_)
+            viz_->update_robot(robotID_, curr_pos_, theta);
 //        if(sim_->getAgentRadius(robotID_) > abs(diff))
             publish_state_message();
         return abs(diff);
+    }
+
+    void save()
+    {
+        viz_->save();
     }
 protected:
     void publish_state_message()
@@ -134,6 +141,9 @@ int main(int argc, char *argv[])
 
         condVar.notify_all();
     }
+
+    r1->save();
+    r2->save();
 
     return 0;
 }
